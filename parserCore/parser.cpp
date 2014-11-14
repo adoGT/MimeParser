@@ -6,11 +6,11 @@
 void MimeParser::parseLine(std::string &line) {
   if(line.length()==0)
     return;
-  throw new ParserException();
+  throw new ParserException("not implemented");
 }
 
 void MimeParser::printTree(std::ostream &stream) {
   if(!stream.good())
     throw new std::invalid_argument("MimeParser::printTree passed stream has error state bit set!");
-  throw new ParserException();
+  throw new ParserException("not implemented");
 }

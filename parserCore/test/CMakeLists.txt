@@ -22,3 +22,8 @@ target_link_libraries(ParserTest ParserCore
                                gmock_main)
 
 add_test(ParserTest ParserTest)
+
+add_executable(TreeTest treeTest.cpp)
+target_link_libraries(TreeTest ParserCore
+			       gmock_main)
+add_test(TreeTest TreeTest)
