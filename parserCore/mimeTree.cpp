@@ -1,11 +1,14 @@
 #include "mimeTree.h"
+#include "parserException.h"
 
 MimeTree::MimeTree() {
   m_parent = NULL;
 }
 
-MimeTree::MimeTree(MimeTree *parent) {
-  setParent(parent);
+MimeTree::MimeTree(std::string content, std::string type) {
+  m_parent = NULL;
+  setContent(content);
+  setType(type);
 }
 
 MimeTree::MimeTree(MimeTree *parent, std::string content, std::string type) {
@@ -20,7 +23,8 @@ MimeTree::~MimeTree() {
 }
 
 MimeTree* MimeTree::addChild() {
-  MimeTree *newNode = new MimeTree(this);
+  MimeTree *newNode = new MimeTree();
+  newNode->setParent(this);
   addChild(newNode);
   return newNode;
 }
@@ -36,6 +40,8 @@ void MimeTree::addChild(MimeTree *node) {
 }
 
 MimeTree* MimeTree::getChildAt(int i) {
+  if(i<0 || i>numberOfNodes()-1)
+    throw ParserException("Node index out of bounds!");
   return m_tree[i];
 }
 

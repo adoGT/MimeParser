@@ -10,8 +10,7 @@ class MimeTree {
   
 public:
   MimeTree();
-  MimeTree(MimeTree *parent);
-  MimeTree(MimeTree *parent, std::string content, std::string type);
+  MimeTree(std::string content, std::string type);
   ~MimeTree();
 
   MimeTree* addChild();
@@ -32,6 +31,7 @@ public:
   void setType(std::string type);
 
 private:
+  MimeTree(MimeTree *parent, std::string content, std::string type);
   void printTree(std::ostream &stream, int depth);
   void printPadding(std::ostream &stream, int depth);
   void setParent(MimeTree *parent);
