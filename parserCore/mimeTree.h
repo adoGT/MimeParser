@@ -17,6 +17,7 @@ public:
   MimeTree* addChild(std::string content, std::string type);
 
   MimeTree* getChildAt(int i);
+  MimeTree* getLastChild();
 
   MimeTree* getParent();
 
@@ -28,12 +29,15 @@ public:
   std::string getType();
   
   void setContent(std::string content);
+  void contentAppendLine(std::string line);
   void setType(std::string type);
-
+  bool isTypeSet();
 private:
   MimeTree(MimeTree *parent, std::string content, std::string type);
   void printTree(std::ostream &stream, int depth);
   void printPadding(std::ostream &stream, int depth);
+  void printPadded(std::ostream &stream, std::string str, int depth, bool type=false);
+  std::string generatePadding(int depth);
   void setParent(MimeTree *parent);
   void addChild(MimeTree *node);
 };

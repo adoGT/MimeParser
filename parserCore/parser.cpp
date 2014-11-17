@@ -2,15 +2,123 @@
 #include "parserException.h"
 #include <ostream>
 #include <stdexcept>
+#include <algorithm>
 
-void MimeParser::parseLine(std::string &line) {
-  if(line.length()==0)
-    return;
-  throw new ParserException("not implemented");
+MimeParser::MimeParser() {
+	mimeTree = NULL;
+  lastType = false;
+}
+
+MimeParser::~MimeParser() {
+  if (mimeTree != NULL)
+    delete mimeTree;
+}
+
+void MimeParser::parseInput(std::istream &stream) {
+  if (mimeTree != NULL)
+    delete mimeTree;
+  boundaries.clear();
+  mimeTree = new MimeTree();
+  parent = mimeTree;
+  currentNode = mimeTree;
+  std::string line;
+  bool goodLine;
+  do{
+    std::getline(stream, line);
+    if (goodLine=stream.good()) {
+      parseLine(line);
+    }
+    else {
+      break;
+    }
+  } while (goodLine);
+  if (parent != mimeTree)
+    throw ParserException("The input has invaild tree structure.");
 }
 
 void MimeParser::printTree(std::ostream &stream) {
-  if(!stream.good())
-    throw new std::invalid_argument("MimeParser::printTree passed stream has error state bit set!");
-  throw new ParserException("not implemented");
+  if (mimeTree == NULL)
+    stream << "No input parsed." << std::endl;
+  else
+    mimeTree->printTree(stream);
+}
+
+void MimeParser::parseLine(std::string line) {
+  //type
+  if (line.find("Content-Type:") == 0 && !currentNode->isTypeSet()) {
+    currentNode->setType(line.substr(14, line.size() - 14)); // Content-Type: multipart/mixed; --we don't need space 
+    lastType = true;
+    return;
+  }
+
+  //boundary
+  if (lastType) {
+    lastType = false;
+    if (parseBoundary(line))
+      return;
+  }
+
+  lastType = false;
+
+  switch (checkBoundary(line))
+  {
+  case 0:
+    currentNode->contentAppendLine(line);
+    break;
+  case 1:
+    currentNode = parent->addChild();
+    break;
+  case 2:
+    boundaries.pop_back();
+    //last part in input
+    if (parent->getParent() == NULL)
+      return;
+    parent = parent->getParent();
+    if ((currentNode = parent->getLastChild()) == NULL)
+      throw ParserException("Misformed end boundary in input.");
+    break;
+  default:
+    throw ParserException("Parser error: Cannot identifie boundary.");
+    break;
+  }
+}
+
+int MimeParser::checkBoundary(std::string boundary) {
+  if (boundaries.empty())
+    return 0;
+  std::string lastBoundary = boundaries.back();
+  std::size_t found = boundary.find(lastBoundary);
+  if (found == 0) {
+    std::string rest = trim(boundary.substr(lastBoundary.size()));
+    
+    //start of next part
+    if (rest.size() == 0)
+      return 1;
+    //end of multipart 
+    if (rest.compare("--") == 0)
+      return 2;
+  }
+  return 0;
+}
+
+std::string MimeParser::trim(std::string str) {
+  str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
+  return str;
+}
+
+//TODO: check if substring between start and "boundary" is only white space
+bool MimeParser::parseBoundary(std::string line) {
+  std::size_t found = line.find("boundary=\"");
+  if (found != std::string::npos) {
+    std::size_t boundaryEnd = line.find("\"", found + 10);
+    std::size_t len = boundaryEnd - (found + 10);
+    if (boundaryEnd == std::string::npos)
+      throw ParserException("Misformed boundary (no end).");
+    if (boundaryEnd != line.size()-1 || len == 0)
+      throw ParserException("Misformed boundary.");
+
+    boundaries.push_back("--" + line.substr(found + 10, len));
+    return true;
+  }
+  return false;
 }

@@ -45,15 +45,19 @@ MimeTree* MimeTree::getChildAt(int i) {
   return m_tree[i];
 }
 
+MimeTree* MimeTree::getLastChild() {
+  if (m_tree.empty())
+    return NULL;
+  return m_tree.back();
+}
+
 void MimeTree::printTree(std::ostream &stream) {
   printTree(stream, 0);
 }
 
 void MimeTree::printTree(std::ostream &stream, int depth) {
-  printPadding(stream, depth);
-  stream << m_type << std::endl;
-  printPadding(stream, depth);
-  stream << m_content << std::endl;
+  printPadded(stream, m_type, depth, true);
+  printPadded(stream, m_content, depth);
   for(int i=0; i<numberOfNodes(); ++i)
     getChildAt(i)->printTree(stream, depth+1);
 }
@@ -62,6 +66,30 @@ void MimeTree::printPadding(std::ostream &stream, int depth) {
   for(int i = 0; i < depth; ++i) {
     stream << "  ";
   }
+}
+
+std::string MimeTree::generatePadding(int depth) {
+  std::string padding;
+  for (int i = 0; i < depth; ++i) {
+    padding += "--";
+  }
+  return padding;
+}
+
+void MimeTree::printPadded(std::ostream &stream, std::string str, int depth, bool type) {
+  std::string padding = generatePadding(depth);
+
+  std::size_t last = 0, found = str.find("\n"), len;
+  while (found != std::string::npos) {
+    len = found - last;
+    stream << padding << str.substr(last, len) << std::endl;
+    last = found+1;
+    found = str.find("\n",last);
+  }
+  if (type) 
+    stream << padding << "Content-Type: " << str.substr(last) << std::endl;
+  else
+    stream << padding << str.substr(last) << std::endl;
 }
 
 void MimeTree::setParent(MimeTree* parent) {
@@ -80,8 +108,18 @@ std::string MimeTree::getType() {
   return m_type;
 }
 
+bool MimeTree::isTypeSet() {
+  if (m_type.size())
+    return true;
+  return false;
+}
+
 void MimeTree::setContent(std::string content) {
-  m_content = content;
+  m_content = content + "\n";
+}
+
+void MimeTree::contentAppendLine(std::string line) {
+  m_content += line + "\n";
 }
 
 int MimeTree::numberOfNodes() {
@@ -89,5 +127,7 @@ int MimeTree::numberOfNodes() {
 }
 
 void MimeTree::setType(std::string type) {
+  if (type.size() == 0)
+    throw ParserException("Misformed type.");
   m_type = type;
 }
