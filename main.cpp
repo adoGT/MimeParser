@@ -5,6 +5,9 @@
 #include "parserCore/parserException.h"
 
 int main(int argc, const char* argv[]){
+  if(argc==2) {
+    std::cout << argv[1] << std::endl;
+  }
   MimeParser parser;
   try{
     std::ifstream myfile("in.txt");

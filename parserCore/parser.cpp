@@ -1,6 +1,6 @@
 #include "parser.h"
 #include "parserException.h"
-#include <ostream>
+#include <iostream>
 #include <stdexcept>
 #include <algorithm>
 
@@ -25,7 +25,7 @@ void MimeParser::parseInput(std::istream &stream) {
   bool goodLine;
   do{
     std::getline(stream, line);
-    if (goodLine=stream.good()) {
+    if ((goodLine=stream.good())) {
       parseLine(line);
     }
     else {
