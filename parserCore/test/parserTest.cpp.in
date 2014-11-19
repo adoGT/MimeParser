@@ -11,7 +11,7 @@
 #include "../parserException.h"
 #include "../parser.h"
 
-#define THIS_DIR "/home/ado/muni/secureCoding/MimeParser/parserCore/test"
+#define THIS_DIR "@Test_Dir@"
 
 namespace testing
 {

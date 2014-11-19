@@ -13,6 +13,9 @@ endif()
 add_subdirectory(${GMOCK_DIR} ${CMAKE_BINARY_DIR}/gmock)
 set_property(TARGET gtest APPEND_STRING PROPERTY COMPILE_FLAGS " -w")
 
+set (Test_Dir "${CMAKE_CURRENT_SOURCE_DIR}")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/parserTest.cpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/parserTest.cpp")
+
 include_directories(SYSTEM ${GMOCK_DIR}/gtest/include
                            ${GMOCK_DIR}/include)
 
