@@ -62,12 +62,6 @@ void MimeTree::printTree(std::ostream &stream, int depth) {
     getChildAt(i)->printTree(stream, depth+1);
 }
 
-void MimeTree::printPadding(std::ostream &stream, int depth) {
-  for(int i = 0; i < depth; ++i) {
-    stream << "  ";
-  }
-}
-
 std::string MimeTree::generatePadding(int depth) {
   std::string padding;
   for (int i = 0; i < depth; ++i) {
@@ -79,9 +73,9 @@ std::string MimeTree::generatePadding(int depth) {
 void MimeTree::printPadded(std::ostream &stream, std::string str, int depth, bool type) {
   std::string padding = generatePadding(depth);
 
-  std::size_t last = 0, found = str.find("\n"), len;
+  std::size_t last = 0, found = str.find("\n");
   while (found != std::string::npos) {
-    len = found - last;
+    std::size_t len = found - last;
     stream << padding << str.substr(last, len) << std::endl;
     last = found+1;
     found = str.find("\n",last);

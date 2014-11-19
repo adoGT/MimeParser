@@ -6,6 +6,8 @@
 
 MimeParser::MimeParser() {
 	mimeTree = NULL;
+  parent = NULL;
+  currentNode = NULL;
   lastType = false;
 }
 

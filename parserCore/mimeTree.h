@@ -35,7 +35,6 @@ public:
 private:
   MimeTree(MimeTree *parent, std::string content, std::string type);
   void printTree(std::ostream &stream, int depth);
-  void printPadding(std::ostream &stream, int depth);
   void printPadded(std::ostream &stream, std::string str, int depth, bool type=false);
   std::string generatePadding(int depth);
   void setParent(MimeTree *parent);

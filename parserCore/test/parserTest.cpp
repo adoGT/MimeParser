@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <stdio.h>
   using std::string;
 
 #include <gmock/gmock.h>
@@ -11,7 +12,7 @@
 #include "../parserException.h"
 #include "../parser.h"
 
-#define THIS_DIR "/home/ado/muni/secureCoding/MimeParser/parserCore/test"
+#define THIS_DIR "C:/muni/secureCoding/MimeParser/parserCore/test"
 
 namespace testing
 {
@@ -28,12 +29,13 @@ namespace testing
 void testPars(int from, int to)
 {
       MimeParser parser;
-      char buffer[200];
       for(int i=from; i<=to; ++i) {
-        snprintf(buffer, 200, "%s/good/m%04i.txt", THIS_DIR, i);
+        std::ostringstream stringStream;
+        stringStream << THIS_DIR << "/good/m" << std::setfill('0') << std::setw(4) << i << ".txt";
+        std::string filePath = stringStream.str();
         std::cout << "###############################" << std::endl
-          << buffer << std::endl << "###############################" << std::endl;
-        std::ifstream myfile(buffer);
+          << filePath << std::endl << "###############################" << std::endl;
+        std::ifstream myfile(filePath.c_str());
         if(myfile.is_open())
         {
           parser.parseInput(myfile);
@@ -41,7 +43,7 @@ void testPars(int from, int to)
           myfile.close();
         } else
         {
-          std::cout << "Failed to open file:" << buffer << "." << std::endl;
+          std::cout << "Failed to open file:" << filePath << "." << std::endl;
           FAIL();
         }
       }
