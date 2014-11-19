@@ -112,12 +112,18 @@ std::string MimeParser::trim(std::string str) {
 bool MimeParser::parseBoundary(std::string line) {
   std::size_t found = line.find("boundary=\"");
   if (found != std::string::npos) {
+    std::string boundaryBegin = trim(line.substr(0, found));
+    if(boundaryBegin.size()!=0)
+      return false;
     std::size_t boundaryEnd = line.find("\"", found + 10);
     std::size_t len = boundaryEnd - (found + 10);
     if (boundaryEnd == std::string::npos)
       throw ParserException("Misformed boundary (no end).");
-    if (boundaryEnd != line.size()-1 || len == 0)
-      throw ParserException("Misformed boundary.");
+    std::cout << line << std::endl;
+    if ((trim(line.substr(boundaryEnd+1, line.size()-boundaryEnd-1))).size()!=0)
+      throw ParserException("Misformed boundary (characters after boundary).");
+    if (len == 0)
+      throw ParserException("Boundary length is zero.");
 
     boundaries.push_back("--" + line.substr(found + 10, len));
     return true;
